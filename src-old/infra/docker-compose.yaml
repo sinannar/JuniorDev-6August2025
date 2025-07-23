@@ -1,0 +1,48 @@
+name: 'demo-infra'
+services:
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=d3m0P@ssw0rd!
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    networks:
+      - demo-network
+  
+  servicebus:
+    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
+    container_name: "servicebus"
+    volumes:
+      - "./sbconfig.json:/ServiceBus_Emulator/ConfigFiles/Config.json"
+    ports:
+      - "5672:5672"
+    environment:
+      - SQL_SERVER=mssql  
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=d3m0P@ssw0rd!
+    depends_on:
+      - mssql
+    networks:
+      - demo-network
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - demo-network
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mssql_data:
+  redis_data:
+
+networks:
+  demo-network:
