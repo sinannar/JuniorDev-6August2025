@@ -11,38 +11,29 @@ services:
       - "1433:1433"
     volumes:
       - mssql_data:/var/opt/mssql
-    networks:
-      - demo-network
+
   
-  servicebus:
-    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
-    container_name: "servicebus"
-    volumes:
-      - "./sbconfig.json:/ServiceBus_Emulator/ConfigFiles/Config.json"
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: azurite
     ports:
-      - "5672:5672"
-    environment:
-      - SQL_SERVER=mssql  
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=d3m0P@ssw0rd!
-    depends_on:
-      - mssql
-    networks:
-      - demo-network
+      - "10000:10000" 
+      - "10001:10001" 
+      - "10002:10002" 
+    volumes:
+      - azurite_data:/data
+      - ./azurite:/workspace
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck"
 
   redis:
     container_name: redis
     image: redis:latest
     ports:
       - "6379:6379"
-    networks:
-      - demo-network
     volumes:
       - redis_data:/data
 
 volumes:
   mssql_data:
   redis_data:
-
-networks:
-  demo-network:
+  azurite_data:

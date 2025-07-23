@@ -1,6 +1,47 @@
 @dotnetwebapi_HostAddress = http://localhost:5062
 
-GET {{dotnetwebapi_HostAddress}}/weatherforecast/
+//
+// SQL
+//
+# Insert new data (PUT)
+PUT {{dotnetwebapi_HostAddress}}/api/Test/InsertData?name=SampleName&description=SampleDescription
 Accept: application/json
 
 ###
+
+# Read data by id (GET)
+GET {{dotnetwebapi_HostAddress}}/api/Test/ReadData?id=1
+Accept: application/json
+
+###
+
+//
+// Storage Queue
+//
+# Send message to queue (PUT)
+PUT {{dotnetwebapi_HostAddress}}/api/Test/SendMessageToQueue?message=SampleMessage
+Accept: application/json
+
+###
+
+# Read message from queue (GET)
+GET {{dotnetwebapi_HostAddress}}/api/Test/ReadMessageFromQueue
+Accept: application/json
+
+###
+
+
+//
+// Redis
+//
+
+# Set cache (PUT)
+PUT {{dotnetwebapi_HostAddress}}/api/Test/SetCache?key=SampleKey&value=SampleValue
+Accept: application/json
+
+###
+
+# Get cache (GET)
+GET {{dotnetwebapi_HostAddress}}/api/Test/GetCache?key=SampleKey
+Accept: application/json    
+

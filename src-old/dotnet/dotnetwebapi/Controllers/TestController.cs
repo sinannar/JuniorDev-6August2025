@@ -1,36 +1,44 @@
-using Azure.Messaging.ServiceBus;
+using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace dotnetwebapi.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class TestController : ControllerBase
+public class TestController(
+    ILogger<TestController> logger
+    , AppDbContext appDbContext
+    , QueueClient queueClient
+    , IDistributedCache cache
+    ) : ControllerBase
 {
 
 
-    private readonly ILogger<TestController> _logger;
-
-    public TestController(ILogger<TestController> logger)
-    {
-        _logger = logger;
-    }
-
     //
-    // ServiceBus
+    // Storage Queue
     //
     [HttpPut]
-    public async Task<IActionResult> SendMessageToSB(string message)
+    public async Task<IActionResult> SendMessageToQueue(string message)
     {
-        _logger.LogInformation("SendMessageToSB called");
-        return Ok("SendMessageToSB executed successfully");
+        await queueClient.CreateIfNotExistsAsync().ConfigureAwait(false);
+        await queueClient.SendMessageAsync(message + DateTimeOffset.Now.ToString()).ConfigureAwait(false);
+        logger.LogInformation("SendMessageToQueue called with message: {Message}", message);
+        return Ok($"SendMessageToQueue executed successfully with message: {message}");
     }
 
     [HttpGet]
-    public async Task<IActionResult> ReadMessageFromSB()
+    public async Task<IActionResult> ReadMessageFromQueue()
     {
-        _logger.LogInformation("ReadMessageFromSB called");
-        return Ok("ReadMessageFromSB executed successfully");
+        var response = await queueClient.ReceiveMessageAsync().ConfigureAwait(false);
+        if (response.Value == null)
+        {
+            return NotFound("No messages in the queue.");
+        }
+
+        var message = response.Value.MessageText;
+        logger.LogInformation("ReadMessageFromQueue called, received message: {Message}", message);
+        return Ok($"ReadMessageFromQueue executed successfully with message: {message}");
     }
 
     //
@@ -39,34 +47,52 @@ public class TestController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> SetCache(string key, string value)
     {
-        _logger.LogInformation("SetCache called with key: {Key}", key);
+        await cache.SetStringAsync(key, value).ConfigureAwait(false);
         return Ok($"SetCache executed successfully for key: {key}");
     }
 
     [HttpGet]
     public async Task<IActionResult> GetCache(string key)
     {
-        _logger.LogInformation("GetCache called with key: {Key}", key);
-        return Ok($"GetCache executed successfully for key: {key}");
+        var value = await cache.GetStringAsync(key).ConfigureAwait(false);
+        if (value == null)
+        {
+            return NotFound($"No cache entry found for key: {key}");
+        }
+        return Ok($"GetCache executed successfully for key: {key} with value: {value}");
     }
 
     //
     // SQL
     //
     [HttpPut]
-    public async Task<IActionResult> InsertData(string data)
+    public async Task<IActionResult> InsertData(string name, string description)
     {
-        _logger.LogInformation("InsertData called with data: {Data}", data);
-        return Ok($"InsertData executed successfully for data: {data}");
+        logger.LogInformation("InsertData called with name: {Name}, description: {Description}", name, description);
+
+        var data = new TestData
+        {
+            Name = name + DateTimeOffset.Now.ToString(),
+            Description = description + DateTimeOffset.Now.ToString(),
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        appDbContext.TestDatas.Add(data);
+        await appDbContext.SaveChangesAsync();
+
+        return Ok($"InsertData executed successfully for name: {name} with Id: {data.Id}");
     }
 
     [HttpGet]
-    public async Task<IActionResult> ReadData()
+    public async Task<IActionResult> ReadData(int id)
     {
-        _logger.LogInformation("ReadData called with query: {Query}", query);
-        return Ok($"ReadData executed successfully for query: {query}");
+        logger.LogInformation("ReadData called with id: {Id}", id);
+        var data = await appDbContext.TestDatas.FindAsync(id);
+        if (data == null)
+        {
+            return NotFound($"No data found with Id: {id}");
+        }
+        return Ok($"ReadData executed successfully for Id: {id} with Name: {data.Name}, Description: {data.Description}");
     }
-    
-
-        
 }
