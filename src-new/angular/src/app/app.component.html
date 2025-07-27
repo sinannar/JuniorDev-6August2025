@@ -1,0 +1,48 @@
+<h1>API Test Dashboard</h1>
+
+<section>
+	<h2>SQL</h2>
+	<label>
+		Name:
+		<input [(ngModel)]="insertName" name="insertName" required />
+	</label>
+	<label>
+		Description:
+		<input [(ngModel)]="insertDescription" name="insertDescription" required />
+	</label>
+	<button (click)="insertData()">Insert Data</button>
+	<br />
+	<label>
+		ID:
+		<input [(ngModel)]="readId" name="readId" required />
+	</label>
+	<button (click)="readData()">Read Data</button>
+
+</section>
+
+<section>
+	<h2>Storage Queue</h2>
+	<label>
+		Message:
+		<input [(ngModel)]="queueMessage" name="queueMessage" required />
+	</label>
+	<button (click)="sendMessageToQueue()">Send Message</button>
+	<br />
+	<button (click)="readMessageFromQueue()">Read Message from Queue</button>
+
+</section>
+
+<section>
+	<h2>Redis</h2>
+	<label>
+		Key:
+		<input [(ngModel)]="cacheKey" name="cacheKey" required />
+	</label>
+	<label>
+		Value:
+		<input [(ngModel)]="cacheValue" name="cacheValue" required />
+	</label>
+	<button (click)="setCache()">Set Cache</button>
+	<br />
+	<button (click)="getCache()">Get Cache</button>
+</section>
