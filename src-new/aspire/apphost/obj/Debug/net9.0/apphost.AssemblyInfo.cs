@@ -10,22 +10,10 @@
 using System;
 using System.Reflection;
 
-[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("467ba1fe-4633-4b05-a215-ff0876f10490")]
-[assembly: System.Reflection.AssemblyMetadata("dcpclipath", ("/Users/sinannar/.nuget/packages/aspire.hosting.orchestration.osx-arm64/9.3.0/tool" +
-    "s/dcp"))]
-[assembly: System.Reflection.AssemblyMetadata("dcpextensionpaths", ("/Users/sinannar/.nuget/packages/aspire.hosting.orchestration.osx-arm64/9.3.0/tool" +
-    "s/ext/"))]
-[assembly: System.Reflection.AssemblyMetadata("dcpbinpath", ("/Users/sinannar/.nuget/packages/aspire.hosting.orchestration.osx-arm64/9.3.0/tool" +
-    "s/ext/bin/"))]
-[assembly: System.Reflection.AssemblyMetadata("apphostprojectpath", "/Users/sinannar/source/JuniorDev-6August2025/src-new/aspire/apphost")]
-[assembly: System.Reflection.AssemblyMetadata("apphostprojectname", "apphost.csproj")]
-[assembly: System.Reflection.AssemblyMetadata("aspiredashboardpath", ("/Users/sinannar/.nuget/packages/aspire.dashboard.sdk.osx-arm64/9.3.0/tools/Aspire" +
-    ".Dashboard.dll"))]
-[assembly: System.Reflection.AssemblyMetadataAttribute("apphostprojectbaseintermediateoutputpath", "/Users/sinannar/source/JuniorDev-6August2025/src-new/aspire/apphost/obj/")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("apphost")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+afd3ed0de65087fd4c5e8ac3f41b21970675d6e1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f9d1eaff42a339d413a734cc4ccd3131045fe5e2")]
 [assembly: System.Reflection.AssemblyProductAttribute("apphost")]
 [assembly: System.Reflection.AssemblyTitleAttribute("apphost")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
