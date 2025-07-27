@@ -19,54 +19,54 @@ public class TestController(
     // Storage Queue
     //
     [HttpPut]
-    public async Task<IActionResult> SendMessageToQueue(string message)
+    public async Task SendMessageToQueue(string message)
     {
         await queueClient.CreateIfNotExistsAsync().ConfigureAwait(false);
-        await queueClient.SendMessageAsync(message + DateTimeOffset.Now.ToString()).ConfigureAwait(false);
+        await queueClient.SendMessageAsync(message).ConfigureAwait(false);
         logger.LogInformation("SendMessageToQueue called with message: {Message}", message);
-        return Ok($"SendMessageToQueue executed successfully with message: {message}");
     }
 
     [HttpGet]
-    public async Task<IActionResult> ReadMessageFromQueue()
+    public async Task<string> ReadMessageFromQueue()
     {
         var response = await queueClient.ReceiveMessageAsync().ConfigureAwait(false);
         if (response.Value == null)
         {
-            return NotFound("No messages in the queue.");
+            throw new InvalidOperationException("No messages available in the queue.");
         }
 
         var message = response.Value.MessageText;
         logger.LogInformation("ReadMessageFromQueue called, received message: {Message}", message);
-        return Ok($"ReadMessageFromQueue executed successfully with message: {message}");
+        return message;
     }
 
     //
     // Redis
     //
     [HttpPut]
-    public async Task<IActionResult> SetCache(string key, string value)
+    public async Task SetCache(string key, string value)
     {
         await cache.SetStringAsync(key, value).ConfigureAwait(false);
-        return Ok($"SetCache executed successfully for key: {key}");
+        logger.LogInformation("SetCache called with key: {Key}, value: {Value}", key, value);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCache(string key)
+    public async Task<string> GetCache(string key)
     {
         var value = await cache.GetStringAsync(key).ConfigureAwait(false);
         if (value == null)
         {
-            return NotFound($"No cache entry found for key: {key}");
+            throw new InvalidOperationException($"No cache entry found for key: {key}");
         }
-        return Ok($"GetCache executed successfully for key: {key} with value: {value}");
+        logger.LogInformation("GetCache called with key: {Key}, retrieved value: {Value}", key, value);
+        return value;
     }
 
     //
     // SQL
     //
     [HttpPut]
-    public async Task<IActionResult> InsertData(string name, string description)
+    public async Task InsertData(string name, string description)
     {
         logger.LogInformation("InsertData called with name: {Name}, description: {Description}", name, description);
 
@@ -80,19 +80,19 @@ public class TestController(
 
         appDbContext.TestDatas.Add(data);
         await appDbContext.SaveChangesAsync();
-
-        return Ok($"InsertData executed successfully for name: {name} with Id: {data.Id}");
+        logger.LogInformation("Data inserted with Id: {Id}", data.Id);
     }
 
     [HttpGet]
-    public async Task<IActionResult> ReadData(int id)
+    public async Task<TestData> ReadData(int id)
     {
         logger.LogInformation("ReadData called with id: {Id}", id);
         var data = await appDbContext.TestDatas.FindAsync(id);
         if (data == null)
         {
-            return NotFound($"No data found with Id: {id}");
+            throw new InvalidOperationException($"No data found with Id: {id}");
         }
-        return Ok($"ReadData executed successfully for Id: {id} with Name: {data.Name}, Description: {data.Description}");
+        logger.LogInformation("Data retrieved with Id: {Id}, Name: {Name}, Description: {Description}", data.Id, data.Name, data.Description);
+        return data;
     }
 }
