@@ -8,7 +8,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     {
       provide: api_url,
-      useValue: 'http://localhost:5062'
+      useValue: 'https://localhost:7045'
     },
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideHttpClient(),
